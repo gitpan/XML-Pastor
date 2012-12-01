@@ -59,7 +59,7 @@ foreach my $country (@countries) {
 				new
 				is_xml_valid
 				xml_validate
-				xml_validate_futher
+				xml_validate_further
 			));
 
 	# XML::Pastor::Type class methods
@@ -126,7 +126,7 @@ foreach my $country (@countries) {
 				new
 				is_xml_valid
 				xml_validate
-				xml_validate_futher
+				xml_validate_further
 			));
 
 	# XML::Pastor::Type class methods

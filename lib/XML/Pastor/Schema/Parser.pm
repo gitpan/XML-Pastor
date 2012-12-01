@@ -362,7 +362,7 @@ sub _processAttribute {
 			$attribInfo->{$obj->name()} = $obj;
 		}else {
 			# An 'orphan' attribute. What is it doing here? 
-			die "Pastor : Attribute '" . $obj->name . "' found where unexpected!\n" . _sprint_xml_element($node->parentNode() || $node) . "\n";
+			die "Pastor : Attribute '" . $obj->name . "' found where unexpected!\n" . sprint_xml_element($node->parentNode() || $node) . "\n";
 		}
 	}else {
 		# Global attribute. Add it to the model.
@@ -390,21 +390,21 @@ sub _processAttributeGroup {
 	$self->_fixUpObject($obj, $node);	
 	
 	unless ($obj->name()) {
-		die "Pastor : Attribute Group must have a name!\n" . _sprint_xml_element($node) . "\n";
+		die "Pastor : Attribute Group must have a name!\n" . sprint_xml_element($node) . "\n";
 	}
 		
 	if ($obj->scope() =~ /local/io) {
 		# Local scope.Add it to the attribute list of the corresponding 
 		# ComplexType that is closest to the top of the node stack in
 		# the current context. 
-		if (my $host=$context->findNode(class=>"XML::Pastor::Schema::ComplexType")) {
+		if (my $host=$context->findNode(class=>["XML::Pastor::Schema::ComplexType",  "XML::Pastor::Schema::AttributeGroup"])) {
 			my $attribs=$host->attributes();
 			my $attribInfo=$host->attributeInfo();						
 			push @$attribs, $obj->name();						
 			$attribInfo->{$obj->name()} = $obj;
 		}else {
 			# An 'orphan' attribute group. What is it doing here? 			
-			die "Pastor : Element '" . $obj->name . "' found where unexpected!\n" . _sprint_xml_element($node->parentNode() || $node) . "\n";	
+			die "Pastor : Element '" . $obj->name . "' found where unexpected!\n" . sprint_xml_element($node->parentNode() || $node) . "\n";	
 		}		
 	}else {
 		# Global attribute group. Add it to the model.
@@ -431,7 +431,7 @@ sub _processElement {
 	# Fix-up the scope and the name of the newly created object.		
 	$self->_fixUpObject($obj, $node);	
 	unless ($obj->name()) {
-		die "Pastor : Element must have a name!\n" . _sprint_xml_element($node->parentNode() || $node) . "\n";	
+		die "Pastor : Element must have a name!\n" . sprint_xml_element($node->parentNode() || $node) . "\n";	
 	}
 		
 	if ($obj->scope() =~ /local/io) {			
@@ -446,7 +446,7 @@ sub _processElement {
 			$elemInfo->{$obj->name()} = $obj;
 		}else {
 			# An 'orphan' element. What is it doing here? 						
-			die "Pastor : Element '" . $obj->name . "' found where unexpected!\n" . _sprint_xml_element($node->parentNode() || $node) . "\n";	
+			die "Pastor : Element '" . $obj->name . "' found where unexpected!\n" . sprint_xml_element($node->parentNode() || $node) . "\n";	
 		}
 	}else {
 		# Global element. Add it to the model.
@@ -473,7 +473,7 @@ sub _processGroup {
 	# Fix-up the scope and the name of the newly created object.			
 	$self->_fixUpObject($obj, $node);	
 	unless ($obj->name()) {
-		die "Pastor : Group must have a name!\n" . _sprint_xml_element($node->parentNode() || $node) . "\n";	
+		die "Pastor : Group must have a name!\n" . sprint_xml_element($node->parentNode() || $node) . "\n";	
 	}
 		
 	if ($obj->scope() =~ /local/io) {			
@@ -488,7 +488,7 @@ sub _processGroup {
 			$elemInfo->{$obj->name()} = $obj;
 		}else {
 			# An 'orphan' group. What is it doing here? 									
-			die "Pastor : Element '" . $obj->name . "' found where unexpected!\n" . _sprint_xml_element($node->parentNode() || $node) . "\n";	
+			die "Pastor : Element '" . $obj->name . "' found where unexpected!\n" . sprint_xml_element($node->parentNode() || $node) . "\n";	
 		}
 	}else {
 		# Global group. Add it to the model.
@@ -528,7 +528,7 @@ sub _processDocumentation {
 		push @$docs, $doc;		
 	}else {
 		# What is an 'documentation' doing outside the scope of a 'Schema::Object'?
-		die "Pastor : Documentation found where unexpected!\n" . _sprint_xml_element($node->parentNode() || $node) . "\n";;	
+		die "Pastor : Documentation found where unexpected!\n" . sprint_xml_element($node->parentNode() || $node) . "\n";;	
 	}
 	
 	# Nothing will get pushed on the node-stack.	
@@ -558,7 +558,7 @@ sub _processEnumeration {
 		$enums->{$value}=1;
 	}else {
 		# What is an 'enumeration' doing outside the scope of a 'SimpleType'?
-		die "Pastor : Enumeration found where unexpected!\n" . _sprint_xml_element($node->parentNode() || $node) . "\n";;	
+		die "Pastor : Enumeration found where unexpected!\n" . sprint_xml_element($node->parentNode() || $node) . "\n";;	
 	}
 	
 	# Nothing will get pushed on the node-stack.	
@@ -586,7 +586,7 @@ sub _processExtension {
 		$host->setFields($attribs);
 		$host->derivedBy("extension");
 	}else {
-		die "Pastor : Extension found where unexpected!\n" . _sprint_xml_element($node->parentNode()) . "\n";	
+		die "Pastor : Extension found where unexpected!\n" . sprint_xml_element($node->parentNode()) . "\n";	
 	}
 	
 	# Nothing will get pushed on the node-stack.	
@@ -607,11 +607,13 @@ sub _processUnion {
 	# attributes of this node.
 	my $obj	 	= XML::Pastor::Schema::Union->new()->setFields(getAttributeHash($node));
 
+    $self->_fixMemberTypesNameSpace($obj, $node);	# Patch by IKEGAMI
+
 	if (my $host=$context->findNode(class=>["XML::Pastor::Schema::SimpleType"])) {
 		$host->base("Union|http://www.w3.org/2001/XMLSchema");
 		$host->derivedBy("union");		
 	}else {
-		die "Pastor : 'union' found where unexpected!\n" . _sprint_xml_element($node->parentNode()) . "\n";	
+		die "Pastor : 'union' found where unexpected!\n" . sprint_xml_element($node->parentNode()) . "\n";	
 	}		
 		
 	# This object will get pushed on the node-stack.	
@@ -651,7 +653,7 @@ sub _processList {
 		$host->base("List|http://www.w3.org/2001/XMLSchema");
 		$host->derivedBy("list");				
 	}else {
-		die "Pastor : 'list' found where unexpected!\n" . _sprint_xml_element($node->parentNode()) . "\n";	
+		die "Pastor : 'list' found where unexpected!\n" . sprint_xml_element($node->parentNode()) . "\n";	
 	}		
 	
 	# This object will get pushed on the node-stack.	
@@ -685,7 +687,7 @@ sub _processInclude {
 
 	# "inlude" element must be a child of the schema element. It can't be deeper. 
 	unless (UNIVERSAL::isa($context->topNode(), "XML::Pastor::Schema")) {
-		die "Pastor : Schema INCLUDE must be global!\n" . _sprint_xml_element($node) . "\n";
+		die "Pastor : Schema INCLUDE must be global!\n" . sprint_xml_element($node) . "\n";
 	}
 	
 	# Just call the method that does the inclusion. 	
@@ -731,7 +733,7 @@ sub _processRedefine {
 
 	# "redefine" element must be a child of the schema element. It can't be deeper. 
 	unless (UNIVERSAL::isa($context->topNode(), "XML::Pastor::Schema")) {
-		die "Pastor : Schema REPLACE must be global!\n" . _sprint_xml_element($node) . "\n";
+		die "Pastor : Schema REPLACE must be global!\n" . sprint_xml_element($node) . "\n";
 	}
 	
 	# Just call the method that does the redefine. 			
@@ -759,7 +761,7 @@ sub _processRestriction {
 		$host->setFields($attribs);
 		$host->derivedBy("restriction");
 	}else {
-		die "Pastor : Restriction found where unexpected!\n" . _sprint_xml_element($node->parentNode()) . "\n";	
+		die "Pastor : Restriction found where unexpected!\n" . sprint_xml_element($node->parentNode()) . "\n";	
 	}
 	return undef;
 }
@@ -928,7 +930,7 @@ sub _processOtherNodes {
 		unless ($context->nodeStack()->count()) {
 			die "Pastor : Element '$name' unexpected as root element in schema!\n";
 		}elsif (UNIVERSAL::isa($context->topNode(), "XML::Pastor::Schema")) {
-			die "Pastor : Element '$name' cannot be global in schema!\n" . _sprint_xml_element($node) . "\n";;	
+			die "Pastor : Element '$name' cannot be global in schema!\n" . sprint_xml_element($node) . "\n";;	
 		}else {
 			# Just set the value as a field in the host object
 			if (my $host=$context->findNode(class=>"XML::Pastor::Schema::Object")) {
@@ -1078,6 +1080,39 @@ sub _fixNameSpaces {
 	return $obj;
 }	
 
+#------------------------------------------------------------
+# Taken from the patch by IKEGAMI on RT bug report #44760: Namespaces broken for xs:union memberTypes
+#------------------------------------------------------------
+sub _fixMemberTypesNameSpace {
+	my $self        = shift;
+    my $obj         = shift;
+    my $node        = shift;
+    my $opts        = {@_};
+    my $localize= $opts->{localize} || 0;
+    my $context     = $self->context();
+    my $verbose     = $self->verbose || 0;
+
+    my @mbts = split ' ', $obj->memberTypes;
+    print STDERR "Fixing up namespaces for 'memberTypes' ('@mbts')...\n" if ($verbose >=9); 
+    foreach my $mbt (@mbts) {
+    	if ($mbt && ($mbt =~ /\|/)) {
+          # Do nothing. There is already a namespace in there.
+        }elsif ($mbt && ($mbt =~ /:/o)) {
+          # There is a namesapce prefix in there.
+          my ($prefix, $local) = split /:/, $mbt, 2;
+          my $uri = $node->lookupNamespaceURI($prefix);
+          if ($uri) {
+            $mbt = "$local|$uri";
+          }
+       }elsif ($mbt) {
+          if (my $uri = $context->targetNamespace()) { 
+             $mbt = "$mbt|$uri";
+          }
+       }       
+    }
+    $obj->memberTypes(join ' ', @mbts);
+    return $obj;
+}      
 
 
 1;

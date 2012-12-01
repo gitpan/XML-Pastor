@@ -88,8 +88,8 @@ sub _generateSingle {
 	my $verbose	= $self->{verbose} || 0;
 
 	foreach my $items ($model->type(), 	$model->element()) {
-		foreach my $name (sort keys %$items) {
-			$code	.= $self->_fabricateCode(@_, object=>$items->{$name});
+		foreach my $key (sort keys %$items) {
+			$code	.= $self->_fabricateCode(@_, object=>$items->{$key});
 		}
 	}
 	
@@ -110,16 +110,7 @@ sub _generateSingle {
 		return $code;
 	}else { 
 		# generate module
-		$destination .= '/' if ($destination && ($destination !~ /\/$/));
-		$class_prefix .= '::' if ($class_prefix && ($class_prefix !~ /::$/));
-		while ($module =~ /:$/) {
-			$module =~ s/:$//;
-		}		
-				
-		my $file	= $module or  die "Pastor:Generator:_generateSingle:A 'module' name is required!\n"; 
-		
-		$file 		= $destination .  $file . '.pm';	
-		$file 		=~ s/::/\//g;		
+		my $file = module_path(module => $module, destination => $destination);
 		$self->_writeCode(@_, file=>$file, code=>$code);	
 	}
 	return $self;		
@@ -140,8 +131,8 @@ sub _generateMultiple {
 	my $destination		= $args->{destination} || '/tmp/lib/perl/';
 	
 	foreach my $items ($model->type(), 	$model->element()) {
-		foreach my $name (sort keys %$items) {
-			my $object 	= $items->{$name};
+		foreach my $key (sort keys %$items) {
+			my $object 	= $items->{$key};
 			my $code	= $self->_fabricateCode(@_, object=>$object);
 			$code 	   	.= "\n\n__END__\n\n";
 			$code		.=$self->_fabricatePod(@_, object=>$object);

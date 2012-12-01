@@ -176,7 +176,7 @@ sub normalize_whitespace {
     my $value 	= shift;
 	my $type	= $self->XmlSchemaType();
 
-	if (defined(my $prop = $type->whiteSpace)) {
+	if (defined($type) and defined(my $prop = $type->whiteSpace)) {
 		$prop = (reftype($prop) eq 'ARRAY') ? $prop : [$prop];
 		foreach my $ws (@$prop) {
 	        if ($ws =~ /^replace$/i) {

@@ -377,7 +377,7 @@ sub xml_validate {
 }
 
 #----------------------------------------------
-sub xml_validate_futher {
+sub xml_validate_further {
 	return 1;	# to be overriden!
 }
 

@@ -78,4 +78,3 @@ test/source/mathworks/schema/releaseData.xsd
 test/source/mathworks/schema/source.xsd
 test/source/mathworks/xml/mProduct.xml
 
-META.yml                                 Module meta-data (added by MakeMaker)

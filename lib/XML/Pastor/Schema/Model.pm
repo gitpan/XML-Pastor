@@ -458,8 +458,10 @@ sub _resolveObjectBase {
 		my $xattribs	= [];
 		my $xattribInfo	= {};
 		
-		push @$xattribs, @{$baseType->effectiveAttributes()};
-		mergeHash ($xattribInfo, $baseType->effectiveAttributeInfo());
+		if (UNIVERSAL::can($baseType, "effectiveAttributes")) {
+			push @$xattribs, @{$baseType->effectiveAttributes()};
+			mergeHash ($xattribInfo, $baseType->effectiveAttributeInfo());
+		}
 		
 		push @$xattribs, @{$object->attributes()};		
 		mergeHash ($xattribInfo, $object->attributeInfo());		
@@ -476,8 +478,10 @@ sub _resolveObjectBase {
 		my $xelems		= [];
 		my $xelemInfo	= {};
 		
-		push @$xelems, @{$baseType->effectiveElements()};
-		mergeHash ($xelemInfo, $baseType->effectiveElementInfo());
+		if (UNIVERSAL::can($baseType, "effectiveElements")) {
+			push @$xelems, @{$baseType->effectiveElements()};
+			mergeHash ($xelemInfo, $baseType->effectiveElementInfo());
+		}
 		
 		push @$xelems, @{$object->elements()};		
 		mergeHash ($xelemInfo, $object->elementInfo());		

@@ -1,5 +1,13 @@
 Revision history for Perl extension XML::Pastor 
 
+1.0.4
+	- Fixed an embarrassing bug where "xml_validate_further()" was misspelled in Type.pm (thanks to karlwb@gmail.com for the bug report #78956 on CPAN RT)
+	- Fixed an undefined error in SimpleType.pm also thanks to thanks to karlwb@gmail.com for the bug report #78956 on CPAN RT
+	- Fixed the infamous _sprint_xml_element misspelling bug. The provided workaround patch was not used. Instead, all references to _sprint_xml_element were replaced by sprint_xml_element in Schema::Parser.pm
+	- Fixed a bug that caused attributeGroup refs not to be supported. Thanks to IKEGAMI for the patch on bug report #39691: An xs:attributeGroup can't contain an xs:attributeGroup ref
+	- Fixed RT bug : #44760: Namespaces broken for xs:union memberTypes: By manually applying the patch proposed by IKEGAMI
+	
+	
 1.0.3 Sat Aug 02 2008
 	- Now, XML::Pastor also generates a special class $class_prefix . "::Pastor::Meta", which may be used to get at the schema Model()
 	- XML::Pastor::Schema::Model now has two new instance methods: xml_item() and xml_item_class  
@@ -13,12 +21,12 @@ Revision history for Perl extension XML::Pastor
 	- Added a 'version()' method to XML::Pastor.
 	
 1.0.1 Mon Jul 14 2008
-	- Corrected some documenation errors.
+	- Corrected some documentation errors.
 	- Re-added version numbers to NodeArray.pm and Pastorize.pm (because of PAUSE indexing issues)
 	- Bumped up version number because of PAUSE indexing errors.
 	
 1.0.0 Mon Jul 14 2008
-	- Corrected some documenation errors.
+	- Corrected some documentation errors.
 	- Bumped up version number because of PAUSE indexing errors.
 	
 0.6.3 Mon Jul 14 2008

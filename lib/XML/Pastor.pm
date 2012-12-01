@@ -22,7 +22,7 @@ use XML::Pastor::Util;
 
 
 use vars qw($VERSION);
-$VERSION	= '1.0.3';
+$VERSION	= '1.0.4';
 
 #------------------------------------------------------------
 sub new {
